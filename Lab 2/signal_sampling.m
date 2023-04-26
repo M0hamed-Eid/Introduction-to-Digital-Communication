@@ -12,7 +12,7 @@ zero_added_signal(1:9)=[];
 % Adding zeros enhances the signal display and don't change the
 % spectrum,it changes sampling freq. only
 t2=linspace(0,1,length(zero_added_signal));
-filtered_signal = filter(B,A,zero_added_signal);
+filtered_signal = 9*filter(B,A,zero_added_signal);
 figure(1),subplot(3,1,1);
 plot(t1, y, 'b', t2, filtered_signal, 'r--');
 title('Reconstruction from over sampling');
@@ -38,10 +38,10 @@ for i=1:length(y)
 end
 zero_added_signal(1:9)=[];
 t2=linspace(0,1,length(zero_added_signal));
-filtered_signal = filter(B,A,zero_added_signal);
+filtered_signal = 7*filter(B,A,zero_added_signal);
 figure(1),subplot(3,1,2);
 plot(t1, y, 'b', t2, filtered_signal, 'r--');
-title('Reconstruction from over sampling');
+title('Reconstruction from critical sampling');
 legend('Original signal', 'Reconstructed signal');
 
 s=fft(filtered_signal);

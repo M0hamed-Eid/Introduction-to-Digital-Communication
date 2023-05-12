@@ -17,10 +17,10 @@ Contributing
 If you find a bug or issue with any of the MATLAB files in this repository, please open an issue on GitHub. If you would like to contribute your own MATLAB files or improvements to the existing files, you can create a pull request and we will review your changes.
 
 License
-The MATLAB files in this repository are licensed under the MIT License. You are free to use, modify, and distribute the code as long as you include the original license text and copyright notice in your own work.
+The MATLAB files in this repository are licensed under the FoE Alexandria University. You are free to use, modify, and distribute the code as long as you include the original license text and copyright notice in your own work.
 
 Acknowledgments
-This repository was inspired by the "Introduction to Digital Communication" course at MIT OpenCourseWare. We would like to thank the instructors and students who have contributed to this course and made it available to the public.
+This repository was inspired by the "Introduction to Digital Communication" course at FoE Alexandria University. We would like to thank the instructors and TAs who have contributed to this course and made it available to the public.
 
 
 

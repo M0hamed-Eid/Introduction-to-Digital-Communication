@@ -1,3 +1,5 @@
+clear, clc, close all;
+
 % Generate a random binary vector
 binary_vector = randi([0 1], 1, 10);
 
@@ -7,7 +9,7 @@ Tb = 10;
 
 % Generate time vector
 t = 0:1/fs:Tb-1/fs;
-
+x_axis = 0: 0.001:10-0.001;
 % NRZ
 
 nrz = zeros(1, length(binary_vector)*length(t));
@@ -22,8 +24,15 @@ nrz_psd = abs(fftshift(fft(nrz))).^2/Tb;
 nrz_f = linspace(-fs/2,fs/2,length(nrz_psd));
 
 figure;
-subplot(6,1,1);
-plot(nrz);
+subplot(721)
+plot(x_axis,repelem(binary_vector,1000))
+ylim([-2 2])
+title('Generated Data');
+xlabel('Time (s)');
+ylabel('Amplitude');
+subplot(723);
+plot(x_axis,nrz);
+ylim([-2 2])
 title('NRZ');
 xlabel('Time (s)');
 ylabel('Amplitude');
@@ -31,8 +40,9 @@ ylabel('Amplitude');
 % NRZ inverted
 nrz_inv = -nrz;
 
- subplot(6,1,2);
-plot(nrz_inv);
+subplot(725);
+plot(x_axis, nrz_inv);
+ylim([-2 2])
 title('NRZ Inverted');
 xlabel('Time (s)');
 ylabel('Amplitude');
@@ -50,8 +60,9 @@ for i = 1:length(binary_vector)
     end
 end
 
-subplot(6,1,3);
-plot(rz);
+subplot(727);
+plot(x_axis, rz);
+ylim([-2 2])
 title('RZ');
 xlabel('Time (s)');
 ylabel('Amplitude');
@@ -71,8 +82,9 @@ for i = 1:10
     end
 end
 
-subplot(6,1,4);
-plot(ami);
+subplot(729);
+plot(x_axis, ami);
+ylim([-2 2])
 title('AMI');
 xlabel('Time (s)');
 ylabel('Amplitude');
@@ -90,8 +102,9 @@ for i = 1:length(binary_vector)
     end
 end
 
-subplot(6,1,5);
-plot(manchester);
+subplot(7,2,11);
+plot(x_axis, manchester);
+ylim([-2 2])
 title('Manchester');
 xlabel('Time (s)');
 ylabel('Amplitude');
@@ -101,8 +114,8 @@ manchester_f = linspace(-fs/2,fs/2,length(manchester_psd));
 
 % Multi level transmission 3
 multi_level_3 = zeros(1, length(binary_vector)*length(t));
-prev=[3*ones(1,length(t)), zeros(1,length(t)) ,-3*ones(1,length(t))];
-last_value=[3 0 -3 0];
+prev=[ones(1,length(t)), zeros(1,length(t)) ,ones(1,length(t))];
+last_value=[1 0 -1 0];
 n=1;
 for i = 1:length(binary_vector)
      
@@ -110,17 +123,18 @@ for i = 1:length(binary_vector)
         multi_level_3((i-1)*length(t)+1:i*length(t)) =last_value(n)*ones(1,length(t)) ;
     else
         n=n+1;
-        if n==5
-        n=1;
-    end
+		if n==5
+			n=1;
+		end
         multi_level_3((i-1)*length(t)+1:i*length(t)) =last_value(n)*ones(1,length(t));
     end
     
-    end
+end
 
 % Plot the modulated signals
-subplot(6,1,6);
-plot( multi_level_3);
+subplot(7,2,13);
+plot(x_axis, multi_level_3);
+ylim([-2 2])
 title('Multi Level Transmission 3');
 xlabel('Time (s)');
 ylabel('Amplitude');
@@ -129,38 +143,37 @@ mlt3_psd = abs(fftshift(fft(multi_level_3))).^2/Tb;
 mlt3_f = linspace(-fs/2,fs/2,length(mlt3_psd));
 
 
-figure;
-subplot(3,2,1);
+subplot(724);
 plot(nrz_f, nrz_psd);
 title('NRZ');
 xlabel('Frequency (Hz)');
 ylabel('Power');
 
-subplot(3,2,2);
+subplot(726);
 plot(nrz_inv_f, nrz_inv_psd);
 title('NRZ Inverted');
 xlabel('Frequency (Hz)');
 ylabel('Power');
 
-subplot(3,2,3);
+subplot(728);
 plot(rz_f, rz_psd);
 title('RZ');
 xlabel('Frequency (Hz)');
 ylabel('Power');
 
-subplot(3,2,4);
+subplot(7,2,10);
 plot(ami_f, ami_psd);
 title('AMI');
 xlabel('Frequency (Hz)');
 ylabel('Power');
-subplot(3,2,5);
 
+subplot(7,2,12);
 plot(manchester_f, manchester_psd);
 title('Manchester');
 xlabel('Frequency (Hz)');
 ylabel('Power');
 
-subplot(3,2,6);
+subplot(7,2,14);
 plot(mlt3_f, mlt3_psd);
 title('MLT-3');
 xlabel('Frequency (Hz)');

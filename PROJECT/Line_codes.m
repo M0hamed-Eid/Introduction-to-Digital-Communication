@@ -20,35 +20,12 @@ for i = 1:length(binary_vector)
         nrz((i-1)*length(t)+1:i*length(t)) = [ones(1, length(t)/2), ones(1, length(t)/2)];
     end
 end
-nrz_psd = abs(fftshift(fft(nrz))).^2/Tb;
-nrz_f = linspace(-fs/2,fs/2,length(nrz_psd));
 
-figure;
-subplot(721)
-plot(x_axis,repelem(binary_vector,1000))
-ylim([-2 2])
-title('Generated Data');
-xlabel('Time (s)');
-ylabel('Amplitude');
-subplot(723);
-plot(x_axis,nrz);
-ylim([-2 2])
-title('NRZ');
-xlabel('Time (s)');
-ylabel('Amplitude');
 
 % NRZ inverted
 nrz_inv = -nrz;
 
-subplot(725);
-plot(x_axis, nrz_inv);
-ylim([-2 2])
-title('NRZ Inverted');
-xlabel('Time (s)');
-ylabel('Amplitude');
 
-nrz_inv_psd = abs(fftshift(fft(nrz_inv))).^2/Tb;
-nrz_inv_f = linspace(-fs/2,fs/2,length(nrz_inv_psd));
 
 % RZ
 rz = zeros(1, length(binary_vector)*length(t));
@@ -60,15 +37,7 @@ for i = 1:length(binary_vector)
     end
 end
 
-subplot(727);
-plot(x_axis, rz);
-ylim([-2 2])
-title('RZ');
-xlabel('Time (s)');
-ylabel('Amplitude');
 
-rz_psd = abs(fftshift(fft(rz))).^2/Tb;
-rz_f = linspace(-fs/2,fs/2,length(rz_psd));
 
 % AMI
 ami = zeros(1, length(binary_vector)*length(t));
@@ -82,15 +51,6 @@ for i = 1:10
     end
 end
 
-subplot(729);
-plot(x_axis, ami);
-ylim([-2 2])
-title('AMI');
-xlabel('Time (s)');
-ylabel('Amplitude');
-
-ami_psd = abs(fftshift(fft(ami))).^2/Tb;
-ami_f = linspace(-fs/2,fs/2,length(ami_psd));
 
 % Manchester coding
 manchester = zeros(1, length(binary_vector)*length(t));
@@ -102,15 +62,6 @@ for i = 1:length(binary_vector)
     end
 end
 
-subplot(7,2,11);
-plot(x_axis, manchester);
-ylim([-2 2])
-title('Manchester');
-xlabel('Time (s)');
-ylabel('Amplitude');
-
-manchester_psd = abs(fftshift(fft(manchester))).^2/Tb;
-manchester_f = linspace(-fs/2,fs/2,length(manchester_psd));
 
 % Multi level transmission 3
 multi_level_3 = zeros(1, length(binary_vector)*length(t));
@@ -131,50 +82,114 @@ for i = 1:length(binary_vector)
     
 end
 
-% Plot the modulated signals
-subplot(7,2,13);
+
+
+
+
+
+
+
+N = length(nrz); % number of samples in the signal
+L = floor(N/2); % length of each segment used in spectral estimation
+[Pxx1, F1] = pwelch(nrz, hamming(L), L/2, [], fs);
+[Pxx2, F2] = pwelch(nrz_inv, hamming(L), L/2, [], fs);
+[Pxx3, F3] = pwelch(rz, hamming(L), L/2, [], fs);
+[Pxx4, F4] = pwelch(ami, hamming(L), L/2, [], fs);
+[Pxx5, F5] = pwelch(manchester, hamming(L), L/2, [], fs);
+[Pxx6, F6] = pwelch(multi_level_3, hamming(L), L/2, [], fs);
+f = 0:10/length(Pxx1):10- (10/length(Pxx1));
+
+figure;
+subplot(711)
+plot(x_axis,repelem(binary_vector,1000))
+ylim([-2 2])
+title('Generated Data');
+xlabel('Time (s)');
+ylabel('Amplitude');
+subplot(712);
+plot(x_axis,nrz);
+ylim([-2 2])
+title('NRZ');
+xlabel('Time (s)');
+ylabel('Amplitude');
+subplot(713);
+plot(x_axis, nrz_inv);
+ylim([-2 2])
+title('NRZ Inverted');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+subplot(714);
+plot(x_axis, rz);
+ylim([-2 2])
+title('RZ');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+subplot(715);
+plot(x_axis, ami);
+ylim([-2 2])
+title('AMI');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+
+subplot(7,1,6);
+plot(x_axis, manchester);
+ylim([-2 2])
+title('Manchester');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+subplot(7,1,7);
 plot(x_axis, multi_level_3);
 ylim([-2 2])
 title('Multi Level Transmission 3');
 xlabel('Time (s)');
 ylabel('Amplitude');
 
-mlt3_psd = abs(fftshift(fft(multi_level_3))).^2/Tb;
-mlt3_f = linspace(-fs/2,fs/2,length(mlt3_psd));
 
 
-subplot(724);
-plot(nrz_f, nrz_psd);
-title('NRZ');
+
+
+
+
+
+
+% Plot the estimated PSD of the NRZ signal
+figure;
+subplot(321);
+plot(F1*7.5, Pxx1, 'LineWidth',2);
 xlabel('Frequency (Hz)');
-ylabel('Power');
+ylabel('PSD');
+title('PSD of NRZ signal');
 
-subplot(726);
-plot(nrz_inv_f, nrz_inv_psd);
-title('NRZ Inverted');
+subplot(322);
+plot(F2*7.5, Pxx2, 'LineWidth',2);
 xlabel('Frequency (Hz)');
-ylabel('Power');
+ylabel('PSD');
+title('PSD of NRZ inverted signal');
 
-subplot(728);
-plot(rz_f, rz_psd);
-title('RZ');
+subplot(323);
+plot(F3*7.5, Pxx3, 'LineWidth',2);
 xlabel('Frequency (Hz)');
-ylabel('Power');
+ylabel('PSD');
+title('PSD of RZ signal');
 
-subplot(7,2,10);
-plot(ami_f, ami_psd);
-title('AMI');
+subplot(324);
+plot(F4*7.5, Pxx4, 'LineWidth',2);
 xlabel('Frequency (Hz)');
-ylabel('Power');
+ylabel('PSD');
+title('PSD of AMI signal');
 
-subplot(7,2,12);
-plot(manchester_f, manchester_psd);
-title('Manchester');
+subplot(325);
+plot(F5*7.5, Pxx5, 'LineWidth',2);
 xlabel('Frequency (Hz)');
-ylabel('Power');
+ylabel('PSD');
+title('PSD of Manchester signal');
 
-subplot(7,2,14);
-plot(mlt3_f, mlt3_psd);
-title('MLT-3');
+subplot(326);
+plot(F6*7.5, Pxx6, 'LineWidth',2);
 xlabel('Frequency (Hz)');
-ylabel('Power');
+ylabel('PSD');
+title('PSD of MLT-3 signal');

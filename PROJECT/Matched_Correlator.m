@@ -44,8 +44,7 @@ data = randi([0 1],1,num_bits);
 waveform = repelem(data,m);
 
 %% Add noise to samples
-berMF = zeros(1,length(SNR));
-berCorr = zeros(1,length(SNR));
+ber = zeros(3,length(SNR));
 
 for iSNR = 1:length(SNR)
     snr = SNR(iSNR);
@@ -60,7 +59,14 @@ for iSNR = 1:length(SNR)
     noisyWF = awgn(waveform, snr, 'measured');
     % Add noise to data bits
     xNoisy = awgn(data, snr, 'measured');
-
+		
+		% simple detector
+		
+		TH = (max(s1) + min(s2))/2;
+		detected_bits = noisyWF(1:m:end) > TH;
+		[~, ratio] = biterr(data, detected_bits);
+    ber(1,iSNR) = ratio;
+		
     % Apply convolution process in the receiver
     % Response of matched filter
     diff = s1 - s2;
@@ -83,41 +89,57 @@ for iSNR = 1:length(SNR)
     received_TH = received >= TH;
 
     [~, ratio] = biterr(data, received_TH);
-    berMF(iSNR) = ratio;
-
+    ber(2,iSNR) = ratio;
+		
     % Correlator
-    xReceived = data.*xNoisy;
+		xReceived = zeros(1,num_bits);
+		for i = 0:length(data)-1
+				noisyWF_20 = noisyWF((i*m)+1:(i+1)*m);       % Extracting 20 samples
+				c = sum(noisyWF_20).* g;
+				mulOP( (length(g)+length(noisyWF_20)-1)*i+1:(length(g)+length(noisyWF_20)-1)*i+length(c) ) = c;
+        k = m + (length(g)+length(noisyWF_20)-1)*(i);        % middle sample index
+        xReceived(i+1) = mulOP(k);                           % concatenating the middle sample to the o/p
+		end
     TH = sum(xReceived)/length(xReceived);
     xReceived_TH = xReceived >= TH;
 
     [~, ratio] = biterr(data, xReceived_TH);
-    berCorr(iSNR) = ratio;
+    ber(3,iSNR) = ratio;
 end
 
 % Plot BER vs SNR curves for matched filter and correlator
 figure;
-subplot(311)
-semilogy(2*SNR, berMF, 'LineWidth', 1.5);
+subplot(411)
+semilogy(SNR, ber(1,:), 'LineWidth', 1.5);
+xlim([0 30])
+xlabel('SNR (dB)'),ylabel('Bit Error Rate');
+set(gca,'FontWeight','bold')
+set(gca,'TitleFontSizeMultiplier',1.2)
+title('Simple Detector');
+subplot(412)
+semilogy(SNR, ber(2,:), 'LineWidth', 1.5);
 xlim([0 30])
 xlabel('SNR (dB)'),ylabel('Bit Error Rate');
 set(gca,'FontWeight','bold')
 set(gca,'TitleFontSizeMultiplier',1.2)
 title('Matched filter');
-subplot(312)
-semilogy(2*SNR, berCorr, 'LineWidth', 1.5);
+subplot(413)
+semilogy(SNR, ber(3,:), 'LineWidth', 1.5);
 xlim([0 30])
 xlabel('SNR (dB)'),ylabel('Bit Error Rate');
 set(gca,'FontWeight','bold')
 set(gca,'TitleFontSizeMultiplier',1.2)
 title('Correlator');
-subplot(313)
-semilogy(2*SNR, berMF, '^-', 'LineWidth', 2, 'MarkerSize', 8);
+subplot(414)
+semilogy(SNR, ber(1,:), 'o-', 'LineWidth', 2, 'MarkerSize', 8);
+hold on
+semilogy(SNR, ber(2,:), 'x-', 'LineWidth', 2, 'MarkerSize', 8);
 hold on;
 xlabel('SNR (dB)'),ylabel('Bit Error Rate');
-semilogy(2*SNR, berCorr, 'o-', 'LineWidth', 2, 'MarkerSize', 8);
+semilogy(SNR, ber(3,:), 's-', 'LineWidth', 2, 'MarkerSize', 8);
 hold off;
 set(gca,'FontWeight','bold')
 set(gca,'TitleFontSizeMultiplier',1.2)
 xlim([0 30])
-legend('matched filter','correlator');
+legend('Simple Detector','Matched filter','Correlator');
 disp(['Elapsed time: ', num2str(toc), ' seconds']);  % display elapsed time

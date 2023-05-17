@@ -160,36 +160,42 @@ ylabel('Amplitude');
 figure;
 subplot(321);
 plot(F1*7.5, Pxx1, 'LineWidth',2);
+grid on
 xlabel('Frequency (Hz)');
-ylabel('PSD');
-title('PSD of NRZ signal');
+ylabel('Magnitude (dB)');
+title('Power Spectral Density (PSD) - NRZ');
 
 subplot(322);
 plot(F2*7.5, Pxx2, 'LineWidth',2);
+grid on
 xlabel('Frequency (Hz)');
-ylabel('PSD');
-title('PSD of NRZ inverted signal');
+ylabel('Magnitude (dB)');
+title('Power Spectral Density (PSD) - NRZI');
 
 subplot(323);
 plot(F3*7.5, Pxx3, 'LineWidth',2);
+grid on
 xlabel('Frequency (Hz)');
-ylabel('PSD');
-title('PSD of RZ signal');
+ylabel('Magnitude (dB)');
+title('Power Spectral Density (PSD) - RZ');
 
 subplot(324);
 plot(F4*7.5, Pxx4, 'LineWidth',2);
+grid on
 xlabel('Frequency (Hz)');
-ylabel('PSD');
-title('PSD of AMI signal');
+ylabel('Magnitude (dB)');
+title('Power Spectral Density (PSD) - AMI');
 
 subplot(325);
 plot(F5*7.5, Pxx5, 'LineWidth',2);
+grid on
 xlabel('Frequency (Hz)');
-ylabel('PSD');
-title('PSD of Manchester signal');
+ylabel('Magnitude (dB)');
+title('Power Spectral Density (PSD) - Manchester');
 
 subplot(326);
 plot(F6*7.5, Pxx6, 'LineWidth',2);
+grid on
 xlabel('Frequency (Hz)');
-ylabel('PSD');
-title('PSD of MLT-3 signal');
+ylabel('Magnitude (dB)');
+title('Power Spectral Density (PSD) - MLT-3');
